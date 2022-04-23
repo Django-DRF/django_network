@@ -1,24 +1,24 @@
-from decouple import config
 import os
 from pathlib import Path
-
+from dotenv import load_dotenv
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
+
+#  Sentry monitoring
+sentry_dsn = os.getenv('SENTRY_DSN_URL') # N.B. set as a string in .env
+
 # Note: Set DEBUG = False and  add localhost to ALLOWED_HOSTS = ['localhost']
+sentry_sdk.init(
+    dsn=sentry_dsn,
+    integrations=[DjangoIntegration()],
 
-sentry_dsn = str(config('SENTRY_DSN_URL'))
+    # Set traces_sample_rate to 1.0 to capture 100% of transactions for performance monitoring -- adjust this value in production.
+    traces_sample_rate=1.0,
 
-# sentry_sdk.init(
-#     dsn=sentry_dsn,
-#     integrations=[DjangoIntegration()],
-#
-#     # Set traces_sample_rate to 1.0 to capture 100% of transactions for performance monitoring -- adjust this value in production.
-#     traces_sample_rate=1.0,
-#
-#     # To associate users to errors (assuming you are using django.contrib.auth) you may enable sending PII data.
-#     send_default_pii=True
-# )
+    # To associate users to errors (assuming you are using django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True
+)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,12 +27,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+dev_secret_key = os.getenv("DEV_SECRET_KEY")
 secret_key_dict = {
-    'prod_secret_key': config('PROD_SECRET_KEY'),
-    'dev_secret_key': config('DEV_SECRET_KEY')
+    'dev_secret_key': str(dev_secret_key)
 }
 
 SECRET_KEY = secret_key_dict.get('dev_secret_key')
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 

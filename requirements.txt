@@ -2,5 +2,5 @@ django
 djangorestframework
 sentry-sdk
 pillow
-python-decouple==3.6
+python-dotenv==0.20.0
 djoser
