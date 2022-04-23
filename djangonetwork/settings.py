@@ -6,8 +6,11 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
 # Note: Set DEBUG = False and  add localhost to ALLOWED_HOSTS = ['localhost']
+
+sentry_dsn = str(config('SENTRY_DSN_URL'))
+
 # sentry_sdk.init(
-#     dsn="https://7fa79d8333aa42aea074ab4a5cccef06@o1189155.ingest.sentry.io/6309424",
+#     dsn=sentry_dsn,
 #     integrations=[DjangoIntegration()],
 #
 #     # Set traces_sample_rate to 1.0 to capture 100% of transactions for performance monitoring -- adjust this value in production.
@@ -24,7 +27,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-+o55!2m7_9mpuue*-ezyms)so3lvps=*=_sfuu8%j8yy*wgxm9'
 secret_key_dict = {
     'prod_secret_key': config('PROD_SECRET_KEY'),
     'dev_secret_key': config('DEV_SECRET_KEY')

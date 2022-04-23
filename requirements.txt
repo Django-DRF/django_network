@@ -3,3 +3,4 @@ djangorestframework
 sentry-sdk
 pillow
 python-decouple==3.6
+djoser
