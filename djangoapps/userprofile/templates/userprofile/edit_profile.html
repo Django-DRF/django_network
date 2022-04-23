@@ -1,0 +1,35 @@
+{% extends 'core/base.html' %}
+
+
+{% block title %}
+    Edit Profile |
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="container">
+
+        <!-- insert Hero here -->
+        {% include 'userprofile/parts/hero.html' %}
+
+        <div class="columns">
+            <div class="column is-12">
+                <h1 class="title">Edit profile</h1>
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+
+                    <div class="field mt-2">
+                        <div class="control">
+                            <button class="button is-success">Save changes</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends 'core/base.html' %}
+
+
+{% block title %}
+    Friends |
+{% endblock %}
+
+{% block content %}
+
+
+    <div class="container">
+
+        <!-- insert Hero here -->
+        {% include 'userprofile/parts/hero.html' %}
+
+        <!-- List friend requests -->
+        <div class="columns">
+            <div class="column is-12">
+                <h1 class="title">Friends</h1>
+
+                {% if request.user == user %}
+                    <h2 class="subtitle">Friend requests</h2>
+
+                    {% for friend_request in requested_friendships %}
+                        <article class="media">
+                            <figure class="media-left">
+                                <p class="image is-64x64">
+                                    <img src="{{ friend_request.created_by.userprofile.get_avatar }}">
+                                </p>
+                            </figure>
+                            <div class="media-content">
+                                <div class="content">
+                                    <p>
+                                        <strong>{{ friend_request.created_by.get_full_name }}</strong>
+                                        <sm>{{ friend_request.created_at }}</sm>
+                                    </p>
+                                </div>
+
+                                <!-- Display options for accepting or rejecting friend requests -->
+                                <nav class="level is-mobile">
+                                    <div class="level-left">
+                                        <a href="?action=accept_request&requested_friendship_id={{ friend_request.id }}" class="level-item">Accept friend request</a>
+                                        <a href="?action=reject_request&requested_friendship_id={{ friend_request.id }}" class="level-item">Reject friend request</a>
+                                    </div>
+                                </nav>
+                            </div>
+                        </article>
+                    {% empty %}
+                        <p>No pending friend requests</p>
+                    {% endfor %}
+                {% endif %}
+
+                <hr>
+
+                <!-- Display the user's friends -->
+                {% for friend in user.userprofile.get_friends %}
+                    <article class="media">
+                        <figure class="media-left">
+                            <p class="image is-64x64">
+                                {% if friend.created_by == user %}
+                                    <img src="{{ friend.requested_to.userprofile.get_avatar }}">
+                                {% else %}
+                                    <img src="{{ friend.created_by.userprofile.get_avatar }}">
+                                {% endif %}
+                            </p>
+                        </figure>
+                        <div class="media-content">
+                            <div class="content">
+                                <p>
+                                    {% if friend.created_by == user %}
+                                        <strong>
+                                            <a href="{% url 'profile' friend.requested_to.id %}">
+                                                {{ friend.requested_to.get_full_name }}
+                                            </a>
+                                        </strong>
+                                    {% else %}
+                                        <p>
+                                            <strong>
+                                                <a href="{% url 'profile' friend.created_by.id %}">
+                                                    {{ friend.created_by.get_full_name }}
+                                                </a>
+                                            </strong>
+                                        </p>
+                                    {% endif %}
+                                </p>
+                                <p>
+                                    <small class="has-text-grey-light"> became friends {{ friend.created_at|timesince }}</small>
+                                </p>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+
+{% endblock %}

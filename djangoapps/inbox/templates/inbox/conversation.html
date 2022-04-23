@@ -1,0 +1,49 @@
+{% extends 'core/base.html' %}
+
+{% block title %}
+    Conversation |
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="columns is-multiline">
+        <div class="column is-12">
+            <h1 class="title">Conversation</h1>
+        </div>
+
+        <div class="column is-12">
+            {% for message in conversation.messages.all %}
+                <article class="media box">
+                    <div class="media-content">
+                        <div class="content">
+                            <p>
+                                <strong>{{ message.created_by.get_full_name }}</strong>
+                                <small>{{ message.created_at|timesince }} ago</small><br>
+                                {{ message.content }}
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+
+        <div class="column is-12">
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="field">
+                    <div class="control">
+                        <textarea class="textarea" name="content"></textarea>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <button class="button is-link">Send</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

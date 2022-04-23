@@ -1,0 +1,42 @@
+{% extends 'core/base.html' %}
+
+{% block title %}
+    Inbox |
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="columns is-multiline">
+            <div class="column is-12">
+                <h1 class="title">Inbox</h1>
+            </div>
+
+
+            <!-- Display both participants in a conversation -->
+            <div class="column is-12">
+                {% for conversation in request.user.conversations.all %}
+                    <article class="media box">
+                        <div class="media-content">
+                            <div class="content">
+                                <p>
+                                    {% for user in conversation.users.all %}
+                                        {% if user != request.user %}
+                                            <strong>{{ user.get_full_name }}</strong>
+                                            <small>{{ conversation.modified_at|timesince }} ago</small>
+                                        {% endif %}
+                                    {% endfor %}
+                                </p>
+
+                                <p>
+                                    <a href="{% url 'conversation' conversation.id %}">View conversation</a>
+                                </p>
+                            </div>
+                        </div>
+                    </article>
+                {% empty %}
+                    <p>No conversations...</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

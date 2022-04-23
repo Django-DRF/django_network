@@ -1,0 +1,84 @@
+{% extends 'core/base.html' %}
+
+{% load post_extras %}
+
+
+{% block title %}
+
+    {% if user == request.user  %}
+        My Feed |
+    {% endif %}
+
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="column is-9">
+            <div class="posts">
+                {% for post in posts %}
+                    <article class="media">
+                        <figure class="media-left">
+                            <p class="image is-64x64">
+                                <img src="{{ post.created_by.userprofile.get_avatar }}">
+                            </p>
+                        </figure>
+
+                        <div class="media-content">
+                            <div class="content">
+                                <p>
+                                    <strong>{{ post.created_by.get_full_name }} </strong> <small> {{ post.created_at|timesince }} ago</small><br>
+                                    {{ post.content }}
+                                </p>
+                            </div>
+                            <nav class="level is-mobile">
+                                <div class="level-left">
+                                    <span class="level-item">Comments ({{ post.comments.all|length }})</span>
+
+                                    {% check_if_liked post as post_is_liked %}
+                                    {% if post_is_liked %}
+                                        <span class="level-item">Liked ({{ post.likes.all|length }})</span>
+                                    {% else %}
+                                        <a href="{% url 'like_post' post.id %}?goto=myfeed" class="level-item">Like ({{ post.likes.all|length }})</a>
+                                    {% endif %}
+                                </div>
+                            </nav>
+
+                            {% include 'userprofile/parts/comments_feed.html' %}
+                        </div>
+                    </article>
+                {% endfor %}
+
+
+                <hr>
+                <!-- Pagination: display page navigation buttons -- 'next' and 'previous' -->
+                {% if posts.has_other_pages %}
+                    <nav class="pagination" role="navigation" aria-label="pagination">
+                        {% if posts.has_previous %}
+                            <a class="pagination-previous is-disabled" href="?page={{ posts.previous_page_number }}">Previous</a>
+                        {% endif %}
+
+                        {% if posts.has_next %}
+                            <a class="pagination-next" href="?page={{ posts.next_page_number }}">Next</a>
+                        {% endif %}
+                    </nav>
+                {% endif %}
+
+                <!-- Pagination: show sequence of existing page numbers -->
+                <ul class="pagination-list">
+                    {% for page_number in posts.paginator.page_range %}
+                        {% if posts.number == page_number %}
+                            <li>
+                                <a class="pagination-link is-current" href="?page={{ page_number }}"> {{ page_number }} </a>
+                            </li>
+                        {% else %}
+                            <li>
+                                <a class="pagination-link" href="?page={{ page_number }}"> {{ page_number }} </a>
+                            </li>
+
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+
+            </div>
+        </div>
+{% endblock %}

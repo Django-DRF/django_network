@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html lang="en" lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device=width, initial-scale=1">
+
+<!-- Set title attribute -->
+    <title>{% block title %}{% endblock %} Django Network</title>
+
+    <!-- favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static '/images/favicon/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static '/images/favicon/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static '/images/favicon/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static '/images/favicon/site.manifest' %}">
+
+    <!-- Bulma CSS -->
+    <link rel="stylesheet" href="{% static '/css/vendor/bulma.v0.9.3.min.css' %}">
+
+</head>
+
+<body>
+
+<!-- Navbar -->
+<nav class="navbar is-black"> <!-- is-dark, is-transparent -->
+
+    <div class="navbar-brand">
+        <a href="/" class="navbar-item">
+            <strong>Django Network</strong> </a>
+    </div>
+
+    <!-- Search  -->
+    <div class="navbar-menu">
+        <div class="navbar-start">
+            <div class="navbar-item">
+
+                <form method="get" action="{% url 'search' %}">
+                    <div class="field has-addons">
+                        <div class="control">
+                            <input type="text" name="query" class="input" placeholder="Search...">
+                        </div>
+
+                        <div class="control">
+                            <button class="button is-success">Find friends</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+        <!-- navbar-end -->
+        <div class="navbar-menu">
+
+            <div class="navbar-end">
+                <a class="navbar-item" href="{% url 'about' %}">About</a>
+
+                {% if request.user.is_authenticated %}
+                    <a href="{% url 'myfeed' %}" class="navbar-item">Feed</a>
+                    <a href="{% url 'inbox' %}" class="navbar-item">Inbox</a>
+                {% endif %}
+
+                <div class="navbar-item">
+                    <div class="buttons">
+                        {% if request.user.is_authenticated %}
+                            <a href="{% url 'myprofile' %}" class="button is-info"><strong>{{ request.user.get_username }}</strong></a>
+                            <a href="{% url 'logout' %}" class="button is-danger"><strong>Logout</strong></a>
+                        {% else %}
+                            <a href="{% url 'signup' %}" class="button is-success"><strong>Sign up</strong></a>
+                            <a href="{% url 'login' %}" class="button is-dark"><strong>Login</strong></a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</nav>
+
+<!-- inject template here -->
+<section class="section">
+
+    <!--  'messages' is a  default global variable, from settings.INSTALLED_APPS[] -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="notification {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {% block content %}
+    {% endblock %}
+
+</section>
+
+
+<footer class="footer">
+    <p class="has-text-centered">Copyright (c) 2022</p>
+</footer>
+
+</body>
+</html>

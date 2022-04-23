@@ -1,0 +1,102 @@
+{% extends 'core/base.html' %}
+
+{% load post_extras %}  <!-- from post/template_tags/post_extras.py -->
+
+
+{% block title %}
+
+    {% if user == request.user  %}
+        {{ request.user.get_full_name | title}} |
+        {% else %}
+        {{ user.get_full_name | title }} |
+    {% endif %}
+
+{% endblock %}
+
+
+{% block content %}
+
+    <!-- Hero -->
+    <div class="container">
+
+        <!-- insert Hero here -->
+        {% include 'userprofile/parts/hero.html' %}
+
+        <!-- The posting form -->
+        <div class="columns">
+            <div class="column is-9">
+
+                {% include 'userprofile/parts/post_form.html' %}
+                <!-- Display the user's posts -->
+                <div class="posts">
+                    {% for post in user.posts.all %}
+                        <article class="media">
+                            <figure class="media-left">
+                                <p class="image is-64x64">
+                                    <img src="{{ post.created_by.userprofile.get_avatar }}">
+                                </p>
+                            </figure>
+                            <div class="media-content">
+                                <div class="content">
+                                    <p>
+                                        <strong>{{ post.created_by.get_full_name }}</strong>
+                                        <small>{{ post.created_at|timesince }}
+                                            ago</small>
+                                        <br>
+                                        {{ post.content }}
+                                    </p>
+                                </div>
+                                <nav class="level is-mobile">
+                                    <div class="level-left">
+                                        <span class="level-item">Comments ({{ post.comments.all|length }})</span>
+                                        {% check_if_liked post as post_is_liked %}
+                                        {% if post_is_liked %}
+                                            <span class="level-item">Liked ({{ post.likes.all|length }})</span>
+                                        {% else %}
+                                            <a href="{% url 'like_post' post.id %}" class="level-item">Like ({{ post.likes.all|length }})</a>
+                                        {% endif %}
+                                    </div>
+                                </nav>
+
+                                <!-- Insert comments feed here -->
+                                {% include 'userprofile/parts/comments_feed.html' %}
+
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Information section: Send direct messages, view posts, send friend requests, get list of friends -->
+            <div class="column is-3">
+                <h3 class="is-size-5">Information</h3>
+
+                <figure class="image is-128x128 mt-4 mb-4">
+                    <img src="{{ user.userprofile.get_avatar }}">
+                </figure>
+
+                {% if request.user != user %}
+                    <p>
+                        <!-- <a href="?action=send_friend_request"> triggers userprofile.views.profile -->
+                        <a href="{% url 'conversation' 0 %}?recipient_id={{ user.id }}">Send direct message</a>
+                    </p>
+                {% endif %}
+
+                {% if request.user != user and not already_friends %}
+                    {% if requested_friendship %}
+                        <p>Friend request sent {{ requested_friendship.created_at }}</p>
+                    {% else %}
+                        <a href="?action=send_friend_request">Send friend request</a>
+                    {% endif %}
+                {% endif %}
+
+                <p><a href="{% url 'friends' user.id %}">{{ user.userprofile.get_friends | length }} Friends</a></p>
+                <p><a href="{% url 'profile' user.id %}">{{ user.posts.all | length }} Posts</a></p>
+
+                {% if request.user == user %}
+                    <p><a href="{% url 'edit_profile' %}">Edit profile</a></p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
